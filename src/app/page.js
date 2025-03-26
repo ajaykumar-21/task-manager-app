@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Auth from "./auth";
 
 export default function Home() {
   const [tasks, setTasks] = useState([]);
@@ -52,6 +53,7 @@ export default function Home() {
           ))}
         </ul>
       </div>
+      <Auth />
     </div>
   );
 }

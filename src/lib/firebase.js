@@ -21,7 +21,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 console.log(app);
 // Initialize Firebase authentication and database
-
 const auth = getAuth(app);
 const db = getFirestore(app);
 const googlProvider = new GoogleAuthProvider();
+
+// Function to sign in users using Google authentication
+
