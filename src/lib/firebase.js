@@ -18,12 +18,29 @@ const firebaseConfig = {
 };
 
 // Initializes the Firebase application with the provided configuration
-const app = initializeApp(firebaseConfig);
-console.log(app);
+const app = initializeApp(firebaseConfig); 
+
 // Initialize Firebase authentication and database
-const auth = getAuth(app);
-const db = getFirestore(app);
-const googlProvider = new GoogleAuthProvider();
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const googlProvider = new GoogleAuthProvider();
 
 // Function to sign in users using Google authentication
+export const signInWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, googlProvider);
+    // console.log(result);
+    return result.user;
+  } catch (error) {
+    console.error("Google Sign-In Error", error);
+  }
+};
 
+// Function to log out the currently authenticated user
+export const logout = async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.log("Logout Error", error);
+  }
+};

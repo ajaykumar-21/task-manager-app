@@ -2,16 +2,21 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useState } from "react";
+import { auth, signInWithGoogle, logout } from "@/lib/firebase";
+import { use, useState } from "react";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const user = "";
+  const [user, setUser] = useState(auth.currentUser);
+  console.log(user);
+
+  // Listen for authentication state changes and update user state
+  auth.onAuthStateChanged((currentUser) => setUser(currentUser));
 
   const signIn = async () => {
     try {
-      await signInWithEmailAndPassword(email, password);
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       console.log("Login Error", error);
     }
@@ -19,7 +24,7 @@ export default function Auth() {
 
   const signUp = async () => {
     try {
-      await createUserWithEmailAndPassword(email, password);
+      await createUserWithEmailAndPassword(auth, email, password);
     } catch (error) {
       console.log("Signup Error", error);
     }
@@ -68,7 +73,7 @@ export default function Auth() {
               Sign Up
             </button>
             <button
-            //   onClick={signInWithGoogle}
+              onClick={signInWithGoogle}
               className="w-full bg-yellow-500 text-white p-2 rounded"
             >
               Sign in with Google
