@@ -22,23 +22,3 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 export { auth, provider, db };
-
-// Function to sign in users using Google authentication
-// export const signInWithGoogle = async () => {
-//   try {
-//     const result = await signInWithPopup(auth, googlProvider);
-//     // console.log(result);
-//     return result.user;
-//   } catch (error) {
-//     console.error("Google Sign-In Error", error);
-//   }
-// };
-
-// // Function to log out the currently authenticated user
-// export const logout = async () => {
-//   try {
-//     await signOut(auth);
-//   } catch (error) {
-//     console.log("Logout Error", error);
-//   }
-// };

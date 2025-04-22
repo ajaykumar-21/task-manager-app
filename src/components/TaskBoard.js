@@ -6,7 +6,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import DraggableTask from "./DraggableTask";
-import socket from "../socket";
+import socket from "../lib/socket";
 
 const initialTasks = {
   todo: [
