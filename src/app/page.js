@@ -10,17 +10,20 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
+import socket from "../lib/socket";
+import { X } from "lucide-react";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 export default function Home() {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
 
-  // Fetch tasks from Firestore when component mounts
   useEffect(() => {
     fetchTasks();
+    socket.on("refresh-tasks", fetchTasks);
+    return () => socket.off("refresh-tasks", fetchTasks);
   }, []);
 
-  // Load tasks from Firebase Firestore
   const fetchTasks = async () => {
     const querySnapshot = await getDocs(collection(db, "tasks"));
     const tasksList = querySnapshot.docs.map((doc) => ({
@@ -30,83 +33,117 @@ export default function Home() {
     setTasks(tasksList);
   };
 
-  // Add a new task to Firestore
   const addTask = async () => {
     if (!newTask.trim()) return;
     await addDoc(collection(db, "tasks"), {
       text: newTask,
-      completed: false,
+      status: "todo",
     });
     setNewTask("");
     fetchTasks();
+    socket.emit("new-task");
   };
 
-  // Toggle task completed status in Firestore
-  const toggleTask = async (id, currentStatus) => {
-    await updateDoc(doc(db, "tasks", id), {
-      completed: !currentStatus,
-    });
-    fetchTasks();
-  };
-
-  // Delete a task from Firestore
   const deleteTask = async (id) => {
     await deleteDoc(doc(db, "tasks", id));
     fetchTasks();
+    socket.emit("new-task");
+  };
+
+  const moveTask = async (id, status) => {
+    await updateDoc(doc(db, "tasks", id), { status });
+    fetchTasks();
+    socket.emit("new-task");
+  };
+
+  const handleDragEnd = async (result) => {
+    const { destination, source, draggableId } = result;
+    if (!destination || destination.droppableId === source.droppableId) return;
+    await moveTask(draggableId, destination.droppableId);
+  };
+
+  const statusLabels = {
+    todo: "To Do",
+    inprogress: "In Process",
+    completed: "Completed",
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold text-blue-400 mb-6">Task Manager 📝</h1>
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h1 className="text-3xl font-bold text-blue-400 text-center mb-6">
+        Task Manager 📝
+      </h1>
 
-      {/* Task input form */}
-      <div className="w-full max-w-md mb-6">
+      <div className="max-w-4xl mx-auto mb-6">
         <input
           type="text"
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
           placeholder="Enter a new task"
-          className="w-full p-2 border rounded mb-2 bg-gray-800 text-white placeholder-gray-400"
+          className="w-full p-2 border rounded bg-gray-800 text-white placeholder-gray-400"
         />
         <button
           onClick={addTask}
-          className="w-full bg-blue-600 hover:bg-blue-500 text-white p-2 rounded"
+          className="w-full mt-2 bg-blue-600 hover:bg-blue-500 text-white p-2 rounded"
         >
           Add Task
         </button>
       </div>
 
-      {/* Task list */}
-      <ul className="w-full max-w-md">
-        {tasks.map((task) => (
-          <li
-            key={task.id}
-            className="flex justify-between items-center p-2 border-b border-gray-700"
-          >
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                checked={task.completed}
-                onChange={() => toggleTask(task.id, task.completed)}
-                className="mr-2 accent-blue-500"
-              />
-              <span
-                className={
-                  task.completed ? "line-through text-gray-500" : "text-white"
-                }
-              >
-                {task.text}
-              </span>
-            </div>
-            <button
-              onClick={() => deleteTask(task.id)}
-              className="bg-red-600 hover:bg-red-500 text-white p-1 px-2 rounded"
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-6xl mx-auto">
+          {Object.keys(statusLabels).map((statusKey) => (
+            <Droppable droppableId={statusKey} key={statusKey}>
+              {(provided) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className="bg-gray-800 rounded-lg p-4 min-h-[300px]"
+                >
+                  <h2 className="text-xl font-semibold mb-4">
+                    {statusLabels[statusKey]}
+                  </h2>
+                  {tasks
+                    .filter((task) => task.status === statusKey)
+                    .map((task, index) => (
+                      <Draggable
+                        key={task.id}
+                        draggableId={task.id}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className="flex justify-between items-center p-2 mb-2 bg-gray-700 rounded"
+                          >
+                            <span
+                              className={
+                                statusKey === "completed"
+                                  ? "line-through text-gray-400"
+                                  : "text-white"
+                              }
+                            >
+                              {task.text}
+                            </span>
+                            <button
+                              onClick={() => deleteTask(task.id)}
+                              className="text-red-500 hover:text-red-400"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          ))}
+        </div>
+      </DragDropContext>
     </div>
   );
 }
