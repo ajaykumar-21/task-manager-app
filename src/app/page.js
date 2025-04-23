@@ -45,21 +45,25 @@ export default function Home() {
   };
 
   const deleteTask = async (id) => {
+    setTasks((prev) => prev.filter((task) => task.id !== id));
     await deleteDoc(doc(db, "tasks", id));
-    fetchTasks();
     socket.emit("new-task");
   };
 
-  const moveTask = async (id, status) => {
-    await updateDoc(doc(db, "tasks", id), { status });
-    fetchTasks();
+  const moveTask = async (id, newStatus) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id ? { ...task, status: newStatus } : task
+      )
+    );
+    await updateDoc(doc(db, "tasks", id), { status: newStatus });
     socket.emit("new-task");
   };
 
-  const handleDragEnd = async (result) => {
+  const handleDragEnd = (result) => {
     const { destination, source, draggableId } = result;
     if (!destination || destination.droppableId === source.droppableId) return;
-    await moveTask(draggableId, destination.droppableId);
+    moveTask(draggableId, destination.droppableId);
   };
 
   const statusLabels = {
@@ -116,7 +120,7 @@ export default function Home() {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            className="flex justify-between items-center p-2 mb-2 bg-gray-700 rounded"
+                            className="transition-all duration-300 ease-in-out flex justify-between items-center p-2 mb-2 bg-gray-700 rounded"
                           >
                             <span
                               className={
