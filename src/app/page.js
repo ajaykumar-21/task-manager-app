@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { DragDropContext } from "@hello-pangea/dnd";
 import { db } from "../lib/firebase";
 import {
   collection,
@@ -11,12 +12,11 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import socket from "../lib/socket";
-import { X } from "lucide-react";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import TaskForm from "@/components/TaskForm";
+import TaskColumn from "@/components/TaskColumn";
 
 export default function Home() {
   const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState("");
 
   useEffect(() => {
     fetchTasks();
@@ -39,7 +39,6 @@ export default function Home() {
       text: newTask,
       status: "todo",
     });
-    setNewTask("");
     fetchTasks();
     socket.emit("new-task");
   };
@@ -77,74 +76,18 @@ export default function Home() {
       <h1 className="text-3xl font-bold text-blue-400 text-center mb-6">
         Task Manager 📝
       </h1>
-
-      <div className="max-w-4xl mx-auto mb-6">
-        <input
-          type="text"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-          placeholder="Enter a new task"
-          className="w-full p-2 border rounded bg-gray-800 text-white placeholder-gray-400"
-        />
-        <button
-          onClick={addTask}
-          className="w-full mt-2 bg-blue-600 hover:bg-blue-500 text-white p-2 rounded"
-        >
-          Add Task
-        </button>
-      </div>
+      <TaskForm onAdd={addTask} />
 
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-6xl mx-auto">
-          {Object.keys(statusLabels).map((statusKey) => (
-            <Droppable droppableId={statusKey} key={statusKey}>
-              {(provided) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  className="bg-gray-800 rounded-lg p-4 min-h-[300px]"
-                >
-                  <h2 className="text-xl font-semibold mb-4">
-                    {statusLabels[statusKey]}
-                  </h2>
-                  {tasks
-                    .filter((task) => task.status === statusKey)
-                    .map((task, index) => (
-                      <Draggable
-                        key={task.id}
-                        draggableId={task.id}
-                        index={index}
-                      >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className="transition-all duration-300 ease-in-out flex justify-between items-center p-2 mb-2 bg-gray-700 rounded"
-                          >
-                            <span
-                              className={
-                                statusKey === "completed"
-                                  ? "line-through text-gray-400"
-                                  : "text-white"
-                              }
-                            >
-                              {task.text}
-                            </span>
-                            <button
-                              onClick={() => deleteTask(task.id)}
-                              className="text-red-500 hover:text-red-400"
-                            >
-                              <X size={16} />
-                            </button>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
+          {Object.entries(statusLabels).map(([statusKey, label]) => (
+            <TaskColumn
+              key={statusKey}
+              statusKey={statusKey}
+              label={label}
+              tasks={tasks.filter((task) => task.status === statusKey)}
+              onDelete={deleteTask}
+            />
           ))}
         </div>
       </DragDropContext>
