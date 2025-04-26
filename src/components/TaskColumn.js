@@ -4,13 +4,19 @@ import TaskCard from "./TaskCard";
 export default function TaskColumn({ statusKey, label, tasks, onDelete }) {
   return (
     <Droppable droppableId={statusKey}>
-      {(provided) => (
+      {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
           {...provided.droppableProps}
-          className="bg-gray-800 rounded-lg p-4 min-h-[300px]"
+          className={`rounded-xl p-5 min-h-[300px] transition-all duration-300
+        ${
+          snapshot.isDraggingOver
+            ? "bg-blue-700/50"
+            : "bg-gray-900 hover:bg-gray-800"
+        }
+        shadow-md`}
         >
-          <h2 className="text-xl font-semibold mb-4">{label}</h2>
+          <h2 className="text-2xl font-bold mb-6 text-white">{label}</h2>
           {tasks.map((task, index) => (
             <TaskCard
               key={task.id}

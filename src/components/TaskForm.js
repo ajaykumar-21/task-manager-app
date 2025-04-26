@@ -12,20 +12,22 @@ export default function TaskForm({ onAdd }) {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mb-6">
-      <input
-        type="text"
-        value={newTask}
-        onChange={(e) => setNewTask(e.target.value)}
-        placeholder="Enter a new task"
-        className="w-full p-2 border rounded bg-gray-800 text-white placeholder-gray-400"
-      />
-      <button
-        onClick={handleSubmit}
-        className="w-full mt-2 bg-blue-600 hover:bg-blue-500 text-white p-2 rounded"
-      >
-        Add Task
-      </button>
+    <div className="w-full max-w-4xl mx-auto mb-8">
+      <div className="flex items-center gap-3">
+        <input
+          type="text"
+          value={newTask}
+          onChange={(e) => setNewTask(e.target.value)}
+          placeholder="Enter a new task..."
+          className="flex-1 p-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+        />
+        <button
+          onClick={handleSubmit}
+          className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-3 rounded-lg transition-all font-semibold shadow-md hover:shadow-lg"
+        >
+          Add Task
+        </button>
+      </div>
     </div>
   );
 }
