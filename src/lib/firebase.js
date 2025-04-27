@@ -14,7 +14,6 @@ const firebaseConfig = {
 
 // Initializes the Firebase application with the provided configuration
 const app = initializeApp(firebaseConfig);
-console.log(app);
 
 // Initialize Firebase authentication and database
 const auth = getAuth(app);
