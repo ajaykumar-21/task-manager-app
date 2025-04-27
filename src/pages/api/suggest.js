@@ -18,7 +18,7 @@ export default async function handler(req, res) {
           {
             role: "user",
             content:
-              "Suggest a simple and actionable task someone might add to their task manager.",
+              "Suggest a productivity-boosting task that can be completed in under 1 hour.",
           },
         ],
         max_tokens: 50,
@@ -33,7 +33,8 @@ export default async function handler(req, res) {
     );
 
     const suggestion = openaiRes.data.choices[0].message.content.trim();
-    return res.status(200).json({ suggestion });
+    const cleanedSuggestion = suggestion.replace(/^"(.*)"$/, "$1");
+    return res.status(200).json({ suggestion: cleanedSuggestion });
   } catch (error) {
     console.error(
       "🔥 Suggestion API error:",
