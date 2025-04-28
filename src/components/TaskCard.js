@@ -28,7 +28,7 @@ export default function TaskCard({ task, index, onDelete }) {
           </span>
           <button
             onClick={() => onDelete(task.id)}
-            className="text-red-500 hover:text-red-400 transition-colors"
+            className="text-red-500 hover:text-red-400 transition-colors cursor-pointer"
           >
             <X size={18} />
           </button>

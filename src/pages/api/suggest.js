@@ -5,6 +5,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: "Method Not Allowed" });
   }
 
+  const { prompt } = req.body;
+
+  if (!prompt) {
+    return res.status(400).json({ message: "Missing prompt" });
+  }
+
   try {
     const openaiRes = await axios.post(
       "https://api.openai.com/v1/chat/completions",
@@ -13,12 +19,11 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: "You are a helpful assistant that suggests tasks.",
+            content: "You are a helpful assistant.",
           },
           {
             role: "user",
-            content:
-              "Suggest a productivity-boosting task that can be completed in under 1 hour.",
+            content: prompt,
           },
         ],
         max_tokens: 50,
