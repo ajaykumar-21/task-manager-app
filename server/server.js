@@ -10,7 +10,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://task-manager-app-tau-livid.vercel.app/",
+      "https://task-manager-app-tau-livid.vercel.app",
     ],
     methods: ["GET", "POST"],
   })
@@ -21,7 +21,7 @@ const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:3000",
-      "https://task-manager-app-tau-livid.vercel.app/",
+      "https://task-manager-app-tau-livid.vercel.app",
     ], // frontend URL
     methods: ["GET", "POST"],
   },
