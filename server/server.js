@@ -6,12 +6,23 @@ const cors = require("cors");
 const PORT = process.env.PORT || 3001;
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://task-manager-app-tau-livid.vercel.app/",
+    ],
+    methods: ["GET", "POST"],
+  })
+);
 
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // frontend URL
+    origin: [
+      "http://localhost:3000",
+      "https://task-manager-app-tau-livid.vercel.app/",
+    ], // frontend URL
     methods: ["GET", "POST"],
   },
 });
