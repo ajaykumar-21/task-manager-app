@@ -1,15 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { db } from "../lib/firebase";
 import {
   collection,
   addDoc,
-  getDocs,
   deleteDoc,
   doc,
   updateDoc,
 } from "firebase/firestore";
+import { db } from "../lib/firebase";
 import socket from "../lib/socket";
 
 export default function useTasks() {
@@ -22,12 +21,13 @@ export default function useTasks() {
   }, []);
 
   const fetchTasks = async () => {
-    const querySnapshot = await getDocs(collection(db, "tasks"));
-    const tasksList = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setTasks(tasksList);
+    try {
+      const res = await fetch("/api/tasks");
+      const data = await res.json();
+      setTasks(data);
+    } catch (err) {
+      console.error("Failed to fetch tasks from API:", err);
+    }
   };
 
   const addTask = async (text) => {
