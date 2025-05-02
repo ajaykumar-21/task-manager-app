@@ -1,15 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  collection,
-  addDoc,
-  deleteDoc,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
-import { db } from "../lib/firebase";
 import socket from "../lib/socket";
+import axios from "axios";
 
 export default function useTasks() {
   const [tasks, setTasks] = useState([]);
@@ -26,20 +19,28 @@ export default function useTasks() {
       const data = await res.json();
       setTasks(data);
     } catch (err) {
-      console.error("Failed to fetch tasks from API:", err);
+      console.error("Failed to fetch tasks:", err);
     }
   };
 
   const addTask = async (text) => {
-    await addDoc(collection(db, "tasks"), { text, status: "todo" });
-    fetchTasks();
-    socket.emit("new-task");
+    try {
+      await axios.post("/api/tasks", { text });
+      fetchTasks();
+      socket.emit("new-task");
+    } catch (err) {
+      console.error("Failed to add task:", err);
+    }
   };
 
   const deleteTask = async (id) => {
     setTasks((prev) => prev.filter((task) => task.id !== id));
-    await deleteDoc(doc(db, "tasks", id));
-    socket.emit("new-task");
+    try {
+      await axios.delete(`/api/tasks/${id}`);
+      socket.emit("new-task");
+    } catch (err) {
+      console.error("Failed to delete task:", err);
+    }
   };
 
   const moveTask = async (id, newStatus) => {
@@ -48,8 +49,12 @@ export default function useTasks() {
         task.id === id ? { ...task, status: newStatus } : task
       )
     );
-    await updateDoc(doc(db, "tasks", id), { status: newStatus });
-    socket.emit("new-task");
+    try {
+      await axios.patch(`/api/tasks/${id}`, { status: newStatus });
+      socket.emit("new-task");
+    } catch (err) {
+      console.error("Failed to move task:", err);
+    }
   };
 
   return { tasks, addTask, deleteTask, moveTask };
