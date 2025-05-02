@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { DragDropContext } from "@hello-pangea/dnd";
 import TaskForm from "@/components/TaskForm";
 import TaskColumn from "@/components/TaskColumn";
