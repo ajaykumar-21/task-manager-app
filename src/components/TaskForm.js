@@ -8,6 +8,7 @@ export default function TaskForm({ onAdd }) {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = () => {
+    console.log("🧪 Button clicked, calling onAdd");
     if (!newTask.trim()) return;
     onAdd(newTask);
     setNewTask("");
@@ -38,6 +39,7 @@ export default function TaskForm({ onAdd }) {
       />
       <div className="flex flex-wrap gap-2 mt-2">
         <button
+          type="button"
           onClick={handleSubmit}
           className="flex-1 bg-blue-600 hover:bg-blue-500 text-white p-2 rounded"
         >

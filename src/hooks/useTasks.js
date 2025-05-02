@@ -35,6 +35,7 @@ export default function useTasks() {
 
   const addTask = async (text) => {
     try {
+      console.log("🚀 Sending task:", text);
       const res = await axios.post("/api/tasks", { text });
       if (res.status === 201) {
         await fetchTasks(); // ensure we re-fetch from DB
