@@ -9,14 +9,24 @@ export default function useTasks() {
 
   useEffect(() => {
     fetchTasks();
-    socket.on("refresh-tasks", fetchTasks);
-    return () => socket.off("refresh-tasks", fetchTasks);
+
+    const refresh = () => {
+      console.log("📡 Refresh event triggered");
+      fetchTasks();
+    };
+
+    socket.on("refresh-tasks", refresh);
+
+    return () => {
+      socket.off("refresh-tasks", refresh);
+    };
   }, []);
 
   const fetchTasks = async () => {
     try {
       const res = await fetch("/api/tasks");
       const data = await res.json();
+      console.log("📝 Fetched tasks:", data);
       setTasks(data);
     } catch (err) {
       console.error("Failed to fetch tasks:", err);
