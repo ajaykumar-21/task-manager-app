@@ -5,13 +5,16 @@ const cors = require("cors");
 
 const PORT = process.env.PORT || 3001;
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://task-manager-app-tau-livid.vercel.app",
+  "https://task-manager-app-git-main-qkarts-projects.vercel.app", // optional
+];
+
 const app = express();
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://task-manager-app-tau-livid.vercel.app",
-    ],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   })
 );
@@ -19,10 +22,7 @@ app.use(
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:3000",
-      "https://task-manager-app-tau-livid.vercel.app",
-    ], // frontend URL
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   },
 });
