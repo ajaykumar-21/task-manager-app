@@ -7,6 +7,7 @@ import TaskForm from "@/components/TaskForm";
 import TaskColumn from "@/components/TaskColumn";
 import useTasks from "../hooks/useTasks";
 import Register from "@/components/Register";
+import Login from "@/components/Login";
 
 export default function Home() {
   const { tasks, addTask, deleteTask, moveTask } = useTasks();
@@ -60,6 +61,7 @@ export default function Home() {
             Create Your Account
           </h2>
           <Register />
+          <Login />
         </div>
       </div>
     </div>
