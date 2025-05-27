@@ -2,19 +2,25 @@
 
 import { useState } from "react";
 import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 export default function TaskForm({ onAdd }) {
   const [newTask, setNewTask] = useState("");
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   const handleSubmit = () => {
-    console.log("🧪 Button clicked, calling onAdd");
     if (!newTask.trim()) return;
     onAdd(newTask);
     setNewTask("");
   };
 
   const suggestTask = async (prompt) => {
+    if (!user) {
+      alert("⚠ Please log in or register to use AI suggestions");
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await axios.post("/api/suggest", { prompt });
@@ -39,7 +45,6 @@ export default function TaskForm({ onAdd }) {
       />
       <div className="flex flex-wrap gap-2 mt-2">
         <button
-          type="button"
           onClick={handleSubmit}
           className="flex-1 bg-blue-600 hover:bg-blue-500 text-white p-2 rounded"
         >
