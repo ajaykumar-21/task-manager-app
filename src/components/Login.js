@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { auth } from "@/lib/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { toast } from "react-hot-toast";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -11,9 +12,10 @@ export default function Login() {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      alert("✅ Logged in successfully");
+      toast.error("✅ Logged in successfully");
     } catch (error) {
-      alert(`❌ Login error: ${error.message}`);
+      toast.error("❌ Login error: ${error.message}");
+      console.log("Login error", error);
     }
   };
 

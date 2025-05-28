@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -26,6 +27,17 @@ export default function RootLayout({ children }) {
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
+          <Toaster
+            position="top-right"
+            reverseOrder={false}
+            toastOptions={{
+              duration: 1000, // auto-dismiss after 1 seconds
+              style: {
+                background: "#333",
+                color: "#fff",
+              },
+            }}
+          />
           <Navbar />
           {children}
         </body>

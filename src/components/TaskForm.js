@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import axios from "axios";
+import { toast } from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 
 export default function TaskForm({ onAdd }) {
@@ -17,7 +18,7 @@ export default function TaskForm({ onAdd }) {
 
   const suggestTask = async (prompt) => {
     if (!user) {
-      alert("⚠ Please log in or register to use AI suggestions");
+      toast.error("⚠ Please log in or register to use AI suggestions");
       return;
     }
 
@@ -26,9 +27,11 @@ export default function TaskForm({ onAdd }) {
       const res = await axios.post("/api/suggest", { prompt });
       if (res.data.suggestion) {
         onAdd(res.data.suggestion);
+        toast.success("✅ AI task added!");
       }
     } catch (error) {
       console.error("Suggestion error:", error);
+      toast.error("❌ Failed to get AI suggestion");
     } finally {
       setLoading(false);
     }
